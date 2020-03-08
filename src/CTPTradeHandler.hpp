@@ -3,9 +3,9 @@
 #include <unistd.h>
 #include <iostream>
 
-#include "config.h"
 #include "ThostFtdcTraderApi.h"
 
+/*
 template <class PublisherT, class MessageT>
 class CTPTradeHandler : public CThostFtdcTraderSpi {
 public:
@@ -244,3 +244,5 @@ private:
   CThostFtdcTraderApi* _api;
   std::shared_ptr<PublisherT> _publisher;
 };
+
+*/

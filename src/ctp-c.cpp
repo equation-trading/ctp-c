@@ -10,9 +10,20 @@
 #include "ConcurrentQueuePublisher.hpp"
 #include "CTPTradeHandler.hpp"
 
-bool g_quit = false;
+void* CTP_TraderApi_CreateFtdcTraderApi(char* flowPath) {
+  return CThostFtdcTraderApi::CreateFtdcTraderApi(flowPath);
+}
+
+char* CTP_TraderApi_GetApiVersion(void* traderApi) {
+  return static_cast<CThostFtdcTraderApi*>(traderApi)->GetApiVersion();
+}
+
+void* CTP_TraderSpi_CreateFtdcTraderSpi(void* traderApi) {
+
+}
 
 
+/*
 using CQChunkMessageCTPHandler = CTPTradeHandler<ConcurrentQueuePublisher<ChunkMessage>, ChunkMessage>;
 using CQChunkMessage = tbb::concurrent_queue<ChunkMessage*>;
 
@@ -96,3 +107,4 @@ int main(int argc, char** argv) {
 
   return 0;
 }
+*/

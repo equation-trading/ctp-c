@@ -2,6 +2,16 @@
 
 #include ""
 
-extern "C" CThostFtdcTraderApi* CTP_TraderAPI_CreateFtdcTraderApi();
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-extern "C" CTP_TraderAPI_SubscribePrivateTopic(CThostFtdcTraderApi* api, );
+void* CTP_TraderApi_CreateFtdcTraderApi(char*);
+
+char* CTP_TraderApi_GetApiVersion();
+
+void* CTP_TraderSpi_CreateFtdcTraderSpi(void* traderApi);
+
+#ifdef __cplusplus
+}
+#endif
