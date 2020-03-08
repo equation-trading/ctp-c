@@ -25,15 +25,15 @@ public:
     _buf(::operator new(size())) {
     char* dst = reinterpret_cast<char*>(_buf);
     memcpy(dst, &_message_type, sizeof(_message_type));
-    memcpy(dst + sizeof(_message_type), _body_length, sizeof(_body_length));
+    memcpy(dst + sizeof(_message_type), &_body_length, sizeof(_body_length));
     memcpy(dst + sizeof(_message_type) + sizeof(_body_length), data, _body_length);
     memcpy(dst + sizeof(_message_type) + _body_length, &_checksum, sizeof(_checksum));
   }
 
   const void* bytes() { return _buf; }
-  size_t size() { return sizeof(_message_type) + sizeof(body_length) + _body_length + sizeof(_checksum);  }
+  size_t size() { return sizeof(_message_type) + sizeof(_body_length) + _body_length + sizeof(_checksum);  }
 
-  ~ChunkMessage() { delete _buf;  }
+  ~ChunkMessage() { ::operator delete(_buf);  }
 
 private:
   uint32_t _message_type;

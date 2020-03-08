@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "ctp-c.h"
 #include "ThostFtdcUserApiDataType.h"
 
 #include "ChunkMessage.hpp"
@@ -14,7 +15,7 @@ void* CTP_TraderApi_CreateFtdcTraderApi(char* flowPath) {
   return CThostFtdcTraderApi::CreateFtdcTraderApi(flowPath);
 }
 
-char* CTP_TraderApi_GetApiVersion(void* traderApi) {
+const char* CTP_TraderApi_GetApiVersion(void* traderApi) {
   return static_cast<CThostFtdcTraderApi*>(traderApi)->GetApiVersion();
 }
 
