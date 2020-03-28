@@ -9,20 +9,144 @@
 
 #include "ChunkMessage.hpp"
 #include "ConcurrentQueuePublisher.hpp"
-#include "CTPTradeHandler.hpp"
 
+#include "CTPTraderApi.hpp"
+#include "CTPTraderSpi.hpp"
+#include "CTPMdApi.hpp"
+#include "CTPMdSpi.hpp"
+
+#define SET_MDSPI_CALLBACK(callbacktype)\
+void CTP_MdSpi_Set##callbacktype(void* mdSpi, callbacktype##CallBack callback) {\
+  static_cast<CTPMdSpi*>(mdSpi)->Set##callbacktype(callback);\
+}
+
+// Implement MD SPI callback
+SET_MDSPI_CALLBACK(OnFrontConnected)
+SET_MDSPI_CALLBACK(OnFrontDisconnected)
+SET_MDSPI_CALLBACK(OnHeartBeatWarning)
+SET_MDSPI_CALLBACK(OnRspUserLogin)
+SET_MDSPI_CALLBACK(OnRspError)
+SET_MDSPI_CALLBACK(OnRspSubMarketData)
+SET_MDSPI_CALLBACK(OnRspUnSubMarketData)
+SET_MDSPI_CALLBACK(OnRspSubForQuoteRsp)
+SET_MDSPI_CALLBACK(OnRspUnSubForQuoteRsp)
+SET_MDSPI_CALLBACK(OnRtnDepthMarketData)
+SET_MDSPI_CALLBACK(OnRtnForQuoteRsp)
+
+void* CTP_MdSpi_CreateMdSpi(void* mdApi) {
+  return new CTPMdSpi(static_cast<CTPMdApi*>(mdApi));
+}
+
+void* CTP_MdSpi_Release(void* mdSpi) {
+  delete static_cast<CTPMdSpi*>(mdSpi);
+}
+
+// Implement MD API
+void* CTP_MdApi_CreateFtdcMdApi(const char *pszFlowPath, const bool bIsUsingUdp, const bool bIsMulticast) {
+  return new CTPMdApi(
+     CThostFtdcMdApi::CreateFtdcMdApi(pszFlowPath, bIsUsingUdp, bIsMulticast)
+  );
+}
+
+void CTP_MdApi_Release(void* mdApi) {
+  static_cast<CTPMdApi*>(mdApi)->Release();
+}
+
+void CTP_MdApi_Init(void* mdApi) {
+  static_cast<CTPMdApi*>(mdApi)->Init();
+}
+
+void CTP_MdApi_Join(void* mdApi) {
+  static_cast<CTPMdApi*>(mdApi)->Join();
+}
+
+void CTP_MdApi_GetTradingDay(void* mdApi) {
+  static_cast<CTPMdApi*>(mdApi)->GetTradingDay();
+}
+
+void CTP_MdApi_RegisterFront(void* mdApi, char* pszFrontAddress) {
+  static_cast<CTPMdApi*>(mdApi)->RegisterFront(pszFrontAddress);
+}
+
+void CTP_MdApi_RegisterNameServer(void* mdApi, char* pszNsAddress) {
+  static_cast<CTPMdApi*>(mdApi)->RegisterNameServer(pszNsAddress);
+}
+
+void CTP_MdApi_RegisterFensUserInfo(void* mdApi, CThostFtdcFensUserInfoField * pFensUserInfo) {
+  static_cast<CTPMdApi*>(mdApi)->RegisterFensUserInfo(pFensUserInfo);
+}
+
+void CTP_MdApi_RegisterSpi(void* mdApi, void* mdSpi) {
+  static_cast<CTPMdApi*>(mdApi)->RegisterSpi(
+    static_cast<CTPMdSpi*>(mdSpi)
+  );
+}
+
+void CTP_MdApi_SubscribeMarketData(void* mdApi, char *ppInstrumentID[], int nCount) {
+  static_cast<CTPMdApi*>(mdApi)->SubscribeMarketData(ppInstrumentID, nCount);
+}
+
+void CTP_MdApi_UnSubscribeMarketData(void* mdApi, char *ppInstrumentID[], int nCount) {
+  static_cast<CTPMdApi*>(mdApi)->UnSubscribeMarketData(ppInstrumentID, nCount);
+}
+
+void CTP_MdApi_SubscribeForQuoteRsp(void* mdApi, char *ppInstrumentID[], int nCount) {
+  static_cast<CTPMdApi*>(mdApi)->SubscribeForQuoteRsp(ppInstrumentID, nCount);
+}
+
+void CTP_MdApi_UnSubscribeForQuoteRsp(void* mdApi, char *ppInstrumentID[], int nCount) {
+  static_cast<CTPMdApi*>(mdApi)->UnSubscribeForQuoteRsp(ppInstrumentID, nCount);
+}
+
+void CTP_MdApi_ReqUserLogin(void* mdApi, CThostFtdcReqUserLoginField *pReqUserLoginField) {
+  static_cast<CTPMdApi*>(mdApi)->ReqUserLogin(pReqUserLoginField);
+}
+
+void CTP_MdApi_ReqUserLogout(void* mdApi, CThostFtdcUserLogoutField *pUserLogout) {
+  static_cast<CTPMdApi*>(mdApi)->ReqUserLogout(pUserLogout);
+}
+
+// Implement Trader API related functions
 void* CTP_TraderApi_CreateFtdcTraderApi(char* flowPath) {
   return CThostFtdcTraderApi::CreateFtdcTraderApi(flowPath);
 }
 
 const char* CTP_TraderApi_GetApiVersion(void* traderApi) {
-  return static_cast<CThostFtdcTraderApi*>(traderApi)->GetApiVersion();
+  return static_cast<CTPTraderApi*>(traderApi)->GetApiVersion();
 }
 
+void CTP_TraderApi_RegisterSpi(void* traderApi, void* spi) {
+  static_cast<CTPTraderApi*>(traderApi)->RegisterSpi(static_cast<CThostFtdcTraderSpi*>(spi));
+}
+
+void CTP_TraderApi_SubscribePrivateTopic(void* traderApi, enum THOST_TE_RESUME_TYPE resumeType) {
+  static_cast<CTPTraderApi*>(traderApi)->SubscribePrivateTopic(resumeType);
+}
+
+void CTP_TraderApi_SubscribePublicTopic(void* traderApi, enum THOST_TE_RESUME_TYPE resumeType) {
+  static_cast<CTPTraderApi*>(traderApi)->SubscribePublicTopic(resumeType);
+}
+
+void CTP_TraderApi_RegisterFront(void* traderApi, char* frontAddress) {
+  static_cast<CTPTraderApi*>(traderApi)->RegisterFront(frontAddress);
+}
+
+void CTP_TraderApi_Init(void* traderApi) {
+  static_cast<CTPTraderApi*>(traderApi)->Init();
+}
+
+void CTP_TraderApi_ReqAuthenticate(void* traderApi, CThostFtdcReqAuthenticateField* req) {
+  static_cast<CTPTraderApi*>(traderApi)->ReqAuthenticate(req);
+}
+
+// Implement Trader spi realted functions.
 void* CTP_TraderSpi_CreateFtdcTraderSpi(void* traderApi) {
-
+  return new CTPTraderSpi(static_cast<CThostFtdcTraderApi*>(traderApi));
 }
 
+void* CTP_TraderSpi_OnFrontConnected(void* traderSpi, OnFrontConnectedCallBack callback) {
+  static_cast<CTPTraderSpi*>(traderSpi)->SetOnFrontConnectedCallBack(callback);
+}
 
 /*
 using CQChunkMessageCTPHandler = CTPTradeHandler<ConcurrentQueuePublisher<ChunkMessage>, ChunkMessage>;

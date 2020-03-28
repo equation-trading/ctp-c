@@ -4,36 +4,30 @@
 #include <iostream>
 
 #include "ThostFtdcTraderApi.h"
+#include "CTPTraderApi.hpp"
+
+class CTPTraderSpi : public CThostFtdcTraderSpi {
+public:
+  CTPTraderSpi(CThostFtdcTraderApi *api) :
+    _api(api) {
+    // _api->RegisterSpi(this);
+    // _api->SubscribePrivateTopic(THOST_TERT_RESTART);
+    // _api->SubscribePublicTopic(THOST_TERT_RESTART);
+    // _api->RegisterFront(const_cast<char *>(acct.front.c_str()));
+    // _api->Init();
+  }
+
+  // OnFrontConnected
+  void SetOnFrontConnectedCallBack(OnFrontConnectedCallBack callback) {
+    // _onFrontConnectedCallBack = callback;
+  }
+  void OnFrontConnected() {
+    // if (_onFrontConnectedCallBack) {
+    //   _onFrontConnectedCallBack(_api, this);
+    // }
+  }
 
 /*
-template <class PublisherT, class MessageT>
-class CTPTradeHandler : public CThostFtdcTraderSpi {
-public:
-  CTPTradeHandler(CThostFtdcTraderApi *api,
-                  AccountInfo& acct,
-                  std::shared_ptr<PublisherT> publisher) :
-    _api(api),
-    _acct(acct),
-    _publisher(publisher),
-    _requestID(0) {
-    api->RegisterSpi(this);
-    // Transmit messages from start of day. Be aware this could cause some issue
-    // TODO think a better idea like if crash restart use restart or else quick
-    api->SubscribePrivateTopic(THOST_TERT_RESTART);
-    api->SubscribePublicTopic(THOST_TERT_RESTART);
-    api->RegisterFront(const_cast<char *>(acct.front.c_str()));
-    api->Init();
-  }
-
-  bool loggedout() { return _loggedout; }
-
-  void OnFrontConnected() {
-    if (!loggedout()) {
-      std::cout << "Connected to frontend: " << _acct.front << std::endl;
-      ReqAuthenticate();
-    }
-  }
-
   void ReqAuthenticate()
   {
     CThostFtdcReqAuthenticateField a = { 0 };
@@ -235,14 +229,8 @@ public:
       std::cout << "OnRspQryTrade done." << std::endl;
     }
   }
-
+*/
 
 private:
-  bool _loggedout;
-  int _requestID;
-  AccountInfo _acct;
   CThostFtdcTraderApi* _api;
-  std::shared_ptr<PublisherT> _publisher;
 };
-
-*/
